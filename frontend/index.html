@@ -220,10 +220,37 @@
   Crypto AI • Live System
 </footer>
 
-let TOKEN = localStorage.getItem("token") || "";
+let TOKEN = localStorage.getItem("token");
 <script>
   const API_BASE = "https://crypto-ai-platform-auto-live.onrender.com";
   let TOKEN = "";
+  
+  async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(`${API_BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    document.getElementById("loginError").innerText = data.detail || "Login failed";
+    return;
+  }
+
+  TOKEN = data.access_token;
+  localStorage.setItem("token", TOKEN);
+
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("app").style.display = "block";
+
+  loadSignals();
+  loadStats();
+}
 
   async function login() {
     const r = await fetch(API + "/login", {
@@ -349,6 +376,13 @@ async function loadUsers() {
       </tr>
     `;
   });
+}
+
+if (TOKEN) {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  loadSignals();
+  loadStats();
 }
 
 </script>

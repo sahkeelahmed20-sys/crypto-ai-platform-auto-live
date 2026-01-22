@@ -37,3 +37,22 @@ def debug():
         "last_close": df["close"].iloc[-1],
         "rows": len(df)
     }
+    
+    
+    from config import AUTO_TRADING_STATE
+
+@app.get("/control/status")
+def control_status():
+    return {
+        "auto_trading": AUTO_TRADING_STATE["enabled"]
+    }
+
+@app.post("/control/enable")
+def enable_trading():
+    AUTO_TRADING_STATE["enabled"] = True
+    return {"auto_trading": True}
+
+@app.post("/control/disable")
+def disable_trading():
+    AUTO_TRADING_STATE["enabled"] = False
+    return {"auto_trading": False}

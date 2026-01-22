@@ -14,6 +14,11 @@ DEMO_USER={
  "auto_trade":True
 }
 
+from stats import log_trade
+
+trade = auto_trade(s, DEMO_USER)
+log_trade(s, trade)
+
 @app.get("/signals")
 def signals():
     try:

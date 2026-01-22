@@ -34,3 +34,12 @@ def signals():
         s["auto"] = trade
         results.append(s)
     return results
+    from binance_data import get_price_history
+
+@app.get("/debug")
+def debug():
+    df = get_price_history("BTCUSDT", "5m")
+    return {
+        "last_close": df["close"].iloc[-1],
+        "rows": len(df)
+    }

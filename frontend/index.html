@@ -38,7 +38,7 @@
   <h3>Login</h3>
   <input id="username" placeholder="Username" />
   <input id="password" type="password" placeholder="Password" />
-  <button onclick="login()">Login</button>
+  <button type="button" onclick="login()">Login</button>
   <p id="loginError" style="color:red;"></p>
 </div>
 
@@ -251,6 +251,51 @@
   loadSignals();
   loadStats();
 }
+
+<script>
+const API_BASE = "https://crypto-ai-platform-auto-live.onrender.com";
+let TOKEN = localStorage.getItem("token");
+
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const res = await fetch(`${API_BASE}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || "Login failed");
+      return;
+    }
+
+    TOKEN = data.access_token;
+    localStorage.setItem("token", TOKEN);
+
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    loadSignals();
+  } catch (err) {
+    alert("Network error");
+    console.error(err);
+  }
+}
+
+// auto-login
+if (TOKEN) {
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  loadSignals();
+}
+</script>
 
   async function login() {
     const r = await fetch(API + "/login", {

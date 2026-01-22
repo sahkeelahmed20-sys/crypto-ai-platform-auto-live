@@ -25,6 +25,20 @@ def require_auth(authorization: str = Header(None)):
     return user
 
 app=FastAPI()
+from jose import jwt
+from config import JWT_SECRET, JWT_ALGORITHM
+from fastapi import Header, HTTPException
+
+def get_current_user(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    token = authorization.replace("Bearer ", "")
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
 init_db()   
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_methods=["*"],allow_headers=["*"])
      

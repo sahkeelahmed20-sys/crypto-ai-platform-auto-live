@@ -6,7 +6,12 @@ from config import ADMIN_USER, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRE_MINUTES
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # hash admin password once
-ADMIN_HASH = pwd_context.hash(ADMIN_USER["password"])
+def authenticate(username: str, password: str):
+    if username != ADMIN_USER["username"]:
+        return False
+
+    # compare raw password (safe for admin-only setup)
+    return password == ADMIN_USER["password"]
 
 def authenticate(username: str, password: str):
     if username != ADMIN_USER["username"]:

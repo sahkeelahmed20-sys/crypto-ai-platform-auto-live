@@ -16,12 +16,17 @@ DEMO_USER={
 
 @app.get("/signals")
 def signals():
-    sigs=get_all_signals()
-    out=[]
-    for s in sigs:
-        s["auto"]=auto_trade(s,DEMO_USER)
-        out.append(s)
-    return out
+    try:
+        signals = get_all_signals()
+        return {
+            "count": len(signals),
+            "signals": signals
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "type": type(e).__name__
+        }
     
     from binance_data import get_price_history
 

@@ -84,7 +84,7 @@ def signals():
             trade = {"error": str(e)}
 
         sig["auto"] = trade
-        results.append(sig)
+        results.append(sig) 
 
     return {
         "count": len(results),

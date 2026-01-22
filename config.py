@@ -26,3 +26,12 @@ RSI_OVERBOUGHT = 65
 AUTO_TRADING_STATE = {
     "enabled": False
 }
+# === AUTH CONFIG ===
+ADMIN_USER = {
+    "username": "admin",
+    "password": "Admin"
+}
+
+JWT_SECRET = "Shakeell.98@"
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRE_MINUTES = 60

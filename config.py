@@ -21,3 +21,8 @@ TIMEFRAMES = ["5m", "15m"]
 MIN_SCORE = 1        # lower = more signals
 RSI_OVERSOLD = 35
 RSI_OVERBOUGHT = 65
+
+# === RUNTIME CONTROL ===
+AUTO_TRADING_STATE = {
+    "enabled": False
+}

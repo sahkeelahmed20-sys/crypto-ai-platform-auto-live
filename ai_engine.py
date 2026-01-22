@@ -26,13 +26,14 @@ def get_all_signals():
             reasons = []
 
             # RSI logic
-            if rsi.iloc[-1] < STRATEGY_PARAMS["rsi_oversold"]:
-                score += 1
-                reasons.append("RSI oversold")
+            from config import MIN_SCORE, RSI_OVERSOLD, RSI_OVERBOUGHT
+                if rsi.iloc[-1] < RSI_OVERSOLD:
+                    score += 1
+                    reasons.append("RSI oversold")
 
-            if rsi.iloc[-1] > STRATEGY_PARAMS["rsi_overbought"]:
-                score -= 1
-                reasons.append("RSI overbought")
+                if rsi.iloc[-1] > RSI_OVERBOUGHT:
+                    score -= 1
+                    reasons.append("RSI overbought")
 
             # EMA logic
             if ema_fast.iloc[-1] > ema_slow.iloc[-1]:
@@ -55,9 +56,9 @@ def get_all_signals():
                 score -= 1
 
             # SIGNAL DECISION
-            if score >= 1:
+            if score >= MIN_SCORE:
                 side = "LONG"
-            elif score <= -1:
+            elif score <= -MIN_SCORE:
                 side = "SHORT"
             else:
                 continue

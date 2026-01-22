@@ -15,6 +15,9 @@ from fastapi import Depends, Header, HTTPException
 from config import AUTO_TRADING_STATE
 from stats import get_stats
 from auth import authenticate, create_token, verify_token
+from auth import router as auth_router
+
+app.include_router(auth_router)
 
 def require_auth(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):

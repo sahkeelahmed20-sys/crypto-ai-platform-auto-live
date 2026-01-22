@@ -1,3 +1,7 @@
+from users import register_user, authenticate
+from models import init_db
+from jose import jwt
+from config import JWT_SECRET, JWT_ALGORITHM
 from fastapi import Header, HTTPException
 from auth import authenticate, create_token, verify_token
 from fastapi import FastAPI
@@ -21,8 +25,14 @@ def require_auth(authorization: str = Header(None)):
     return user
 
 app=FastAPI()
+init_db()   
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_methods=["*"],allow_headers=["*"])
-
+     
+@app.post("/register")
+def register(data: dict):
+    register_user(data["username"], data["password"])
+    return {"status": "user_created"}
+    
 DEMO_USER={
  "api_key":"JkUZNQbfPbdpWGYdC0Cxv0bXczcyLy5ExJHFU0zy78ZdhUHAPRlfzmd2GIfdBU0j",
  "api_secret":"ojJMIVGoAhItzWGMKJ4HrbrG1egikeCZf8Ith5AShSz3sqBMsLuzDwVP9EhbBHU9",
@@ -50,6 +60,14 @@ def signals():
         }
     
     from binance_data import get_price_history
+    
+def get_current_user(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401)
+
+    token = authorization.replace("Bearer ", "")
+    payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    return payload 
     
    @app.get("/control/status")
 def control_status(user=Depends(require_auth)):
@@ -81,9 +99,10 @@ def debug():
     from config import AUTO_TRADING_STATE
 @app.post("/login")
 def login(data: dict):
-    if not authenticate(data.get("username"), data.get("password")):
+    token = authenticate(data["username"], data["password"])
+    if not token:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"token": create_token()}
+    return {"token": token}
 @app.get("/control/status")
 def control_status():
     return {

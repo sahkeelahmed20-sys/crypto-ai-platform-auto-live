@@ -1,7 +1,13 @@
-
 from executor import execute_trade
-from config import TRADING_ENABLED
+from config import AUTO_TRADING_STATE
 
-def auto_trade(signal,user):
-    if not TRADING_ENABLED: return {"status":"blocked"}
-    return execute_trade(user["api_key"],user["api_secret"],signal,user["balance"])
+def auto_trade(signal, user):
+    if not AUTO_TRADING_STATE["enabled"]:
+        return {"status": "disabled"}
+
+    return execute_trade(
+        user["api_key"],
+        user["api_secret"],
+        signal,
+        user["balance"]
+    )

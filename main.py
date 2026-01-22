@@ -69,7 +69,14 @@ def get_current_user(authorization: str = Header(None)):
     payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     return payload 
     
-   @app.get("/control/status")
+@app.post("/control/enable")
+def enable_trading(user=Depends(get_current_user)):
+    if not user["admin"]:
+        raise HTTPException(status_code=403)
+    AUTO_TRADING_STATE["enabled"] = True
+    return {"auto_trading": True}
+    
+@app.get("/control/status")
 def control_status(user=Depends(require_auth)):
     return {"auto_trading": AUTO_TRADING_STATE["enabled"]}
 

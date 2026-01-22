@@ -73,17 +73,23 @@ log_trade(s, trade)
 
 @app.get("/signals")
 def signals():
-    signals = get_all_signals()
-    trade = auto_trade(s, DEMO_USER)
-    return signals
-            "count": len(signals),
-            "signals": signals
-        }
-    except Exception as e:
-        return {
-            "error": str(e),
-            "type": type(e).__name__
-        }
+    results = []
+
+    all_signals = get_all_signals()
+
+    for sig in all_signals:
+        try:
+            trade = auto_trade(sig, DEMO_USER)
+        except Exception as e:
+            trade = {"error": str(e)}
+
+        sig["auto"] = trade
+        results.append(sig)
+
+    return {
+        "count": len(results),
+        "signals": results
+    }
     
     from binance_data import get_price_history
     

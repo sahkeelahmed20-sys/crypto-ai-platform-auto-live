@@ -55,9 +55,9 @@ def get_all_signals():
                 score -= 1
 
             # SIGNAL DECISION
-            if score >= 2:
+            if score >= 1:
                 side = "LONG"
-            elif score <= -2:
+            elif score <= -1:
                 side = "SHORT"
             else:
                 continue

@@ -18,7 +18,12 @@ def get_all_signals():
             if emaf.iloc[-1]>emas.iloc[-1]: score+=2; reasons.append("EMA bullish")
             ml=ml_model.predict([df["close"].pct_change().iloc[-1]])
             if ml>0.3: score+=1
-            if score>=3:
+             if score >= 2:
+    side = "LONG"
+elif score <= -2:
+    side = "SHORT"
+else:
+    return None
                 price=df["close"].iloc[-1]
                 signals.append({
                     "pair":pair,"timeframe":tf,"side":"LONG",

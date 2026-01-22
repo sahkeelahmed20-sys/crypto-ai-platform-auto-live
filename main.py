@@ -13,8 +13,8 @@ app.add_middleware(
 )
 
 DEMO_USER = {
-    "api_key": "PUT_TESTNET_KEY",
-    "api_secret": "PUT_TESTNET_SECRET",
+    "api_key": "honFOrqroKOVb0DFSCzHqZYvwGeymNQy3EFgF35SmVg1ceiSWZ7E9E3odeJuaAOc",
+    "api_secret": "p1y7rzg89su3jYWnmIgHjnP1Ov1XcH70kwExswK5PYRFvUFVwQNZIm6dZ4QNVGjj",
     "balance": 1000,
     "auto_trade": True
 }

@@ -1,31 +1,41 @@
-from datetime import datetime, timedelta
-from jose import jwt, JWTError
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from passlib.context import CryptContext
-from config import ADMIN_USER, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRE_MINUTES
 
+router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# hash admin password once
-def authenticate(username: str, password: str):
-    if username != ADMIN_USER["username"]:
-        return False
+# TEMP in-memory admin (we can move to DB later)
+ADMIN_USER = {
+    "username": "admin",
+    "password_hash": pwd_context.hash("admin123")
+}
 
-    # compare raw password (safe for admin-only setup)
-    return password == ADMIN_USER["password"]
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
-def authenticate(username: str, password: str):
-    if username != ADMIN_USER["username"]:
-        return False
-    return pwd_context.verify(password, ADMIN_HASH)
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
-def create_token():
-    expire = datetime.utcnow() + timedelta(minutes=JWT_EXPIRE_MINUTES)
-    payload = {"sub": ADMIN_USER["username"], "exp": expire}
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-def verify_token(token: str):
+@router.post("/login", response_model=LoginResponse)
+def login(data: LoginRequest):
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return payload["sub"]
-    except JWTError:
-        return None
+        if data.username != ADMIN_USER["username"]:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        if not pwd_context.verify(data.password, ADMIN_USER["password_hash"]):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        # TEMP token (JWT comes next)
+        token = "demo-token-admin"
+
+        return {"access_token": token, "token_type": "bearer"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("LOGIN ERROR:", e)
+        raise HTTPException(status_code=500, detail="Login failed")

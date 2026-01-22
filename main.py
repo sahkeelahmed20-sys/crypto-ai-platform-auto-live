@@ -1,4 +1,5 @@
-
+from fastapi import Header, HTTPException
+from auth import authenticate, create_token, verify_token
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ai_engine import get_all_signals
@@ -45,7 +46,11 @@ def debug():
     
     
     from config import AUTO_TRADING_STATE
-
+@app.post("/login")
+def login(data: dict):
+    if not authenticate(data.get("username"), data.get("password")):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"token": create_token()}
 @app.get("/control/status")
 def control_status():
     return {

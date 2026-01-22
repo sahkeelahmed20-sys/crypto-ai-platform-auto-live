@@ -8,8 +8,8 @@ app=FastAPI()
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_methods=["*"],allow_headers=["*"])
 
 DEMO_USER={
- "api_key":"PUT_TESTNET_KEY",
- "api_secret":"PUT_TESTNET_SECRET",
+ "api_key":"JkUZNQbfPbdpWGYdC0Cxv0bXczcyLy5ExJHFU0zy78ZdhUHAPRlfzmd2GIfdBU0j",
+ "api_secret":"ojJMIVGoAhItzWGMKJ4HrbrG1egikeCZf8Ith5AShSz3sqBMsLuzDwVP9EhbBHU9",
  "balance":1000,
  "auto_trade":True
 }

@@ -149,16 +149,24 @@ def debug():
     
     from config import AUTO_TRADING_STATE
 
+from fastapi import HTTPException
+
 @app.post("/login")
 def login(data: dict):
     username = data.get("username")
     password = data.get("password")
 
     if not username or not password:
-        raise HTTPException(status_code=400, detail="Missing credentials")
+        raise HTTPException(
+            status_code=422,
+            detail="username and password are required"
+        )
 
     if username != ADMIN_USER["username"] or password != ADMIN_USER["password"]:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid credentials"
+        )
 
     token = jwt.encode(
         {"sub": username},

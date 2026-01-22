@@ -45,6 +45,37 @@
 <div id="signals">Loading...</div>
 
 <script>
+
+const CONTROL = "https://crypto-ai-platform-auto-live.onrender.com/control";
+const STATS = "https://crypto-ai-platform-auto-live.onrender.com/stats";
+
+async function loadStatus() {
+  const r = await fetch(CONTROL + "/status");
+  const d = await r.json();
+  document.getElementById("status").innerText =
+    "Auto trading: " + (d.auto_trading ? "ENABLED" : "DISABLED");
+}
+
+async function enable() {
+  await fetch(CONTROL + "/enable", { method: "POST" });
+  loadStatus();
+}
+
+async function disable() {
+  await fetch(CONTROL + "/disable", { method: "POST" });
+  loadStatus();
+}
+
+async function loadStats() {
+  const r = await fetch(STATS);
+  const d = await r.json();
+  document.getElementById("stats").innerText =
+    `Total: ${d.total_trades} | Executed: ${d.executed} | Blocked: ${d.blocked}`;
+}
+
+loadStatus();
+loadStats();
+setInterval(loadStats, 15000);
 const API = "https://crypto-ai-platform-auto-live.onrender.com/signals";
 
 async function loadSignals() {

@@ -154,6 +154,9 @@ def login(data: dict):
     username = data.get("username")
     password = data.get("password")
 
+    if not username or not password:
+        raise HTTPException(status_code=400, detail="Missing credentials")
+
     if username != ADMIN_USER["username"] or password != ADMIN_USER["password"]:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -163,7 +166,10 @@ def login(data: dict):
         algorithm=JWT_ALGORITHM
     )
 
-    return {"access_token": token}
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
 
 
 @app.get("/control/status")

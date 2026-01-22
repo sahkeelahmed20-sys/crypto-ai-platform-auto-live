@@ -148,12 +148,24 @@ def debug():
     
     
     from config import AUTO_TRADING_STATE
+
 @app.post("/login")
 def login(data: dict):
-    token = authenticate(data["username"], data["password"])
-    if not token:
+    username = data.get("username")
+    password = data.get("password")
+
+    if username != ADMIN_USER["username"] or password != ADMIN_USER["password"]:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"token": token}
+
+    token = jwt.encode(
+        {"sub": username},
+        JWT_SECRET,
+        algorithm=JWT_ALGORITHM
+    )
+
+    return {"access_token": token}
+
+
 @app.get("/control/status")
 def control_status():
     return {

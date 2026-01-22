@@ -1,3 +1,6 @@
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from users import register_user, authenticate
 from models import init_db
 from jose import jwt
@@ -25,6 +28,11 @@ def require_auth(authorization: str = Header(None)):
     return user
 
 app=FastAPI()
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+def serve_frontend():
+    return Path("frontend/index.html").read_text()  
 from jose import jwt
 from config import JWT_SECRET, JWT_ALGORITHM
 from fastapi import Header, HTTPException

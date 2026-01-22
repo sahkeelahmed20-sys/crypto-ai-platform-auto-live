@@ -1,8 +1,9 @@
 from executor import execute_trade
 from config import AUTO_TRADING_STATE
 
+
 def auto_trade(signal, user):
-    if not AUTO_TRADING_STATE["enabled"]:
+    if not user["auto_trading"]:
         return {"status": "disabled"}
 
     return execute_trade(
@@ -10,4 +11,4 @@ def auto_trade(signal, user):
         user["api_secret"],
         signal,
         user["balance"]
-    )
+    )   

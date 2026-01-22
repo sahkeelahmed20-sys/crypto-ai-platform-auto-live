@@ -33,6 +33,18 @@
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
     }
+    
+   <div id="loginBox">
+  <h3>Login</h3>
+  <input id="username" placeholder="Username" />
+  <input id="password" type="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <p id="loginError" style="color:red;"></p>
+</div>
+
+<div id="app" style="display:none;">
+  <!-- dashboard content here -->
+</div>
 
     header {
       padding: 14px;

@@ -73,9 +73,9 @@ log_trade(s, trade)
 
 @app.get("/signals")
 def signals():
-    try:
-        signals = get_all_signals()
-        return {
+    signals = get_all_signals()
+    trade = auto_trade(s, DEMO_USER)
+    return signals
             "count": len(signals),
             "signals": signals
         }

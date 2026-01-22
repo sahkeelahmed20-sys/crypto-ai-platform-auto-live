@@ -61,3 +61,9 @@ def enable_trading():
 def disable_trading():
     AUTO_TRADING_STATE["enabled"] = False
     return {"auto_trading": False}
+    
+from stats import get_stats
+
+@app.get("/stats")
+def stats():
+    return get_stats()

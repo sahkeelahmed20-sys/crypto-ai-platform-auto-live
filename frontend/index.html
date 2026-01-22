@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Crypto AI Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #0b0e11;
+      color: #eaecef;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+    }
+    h1 {
+      text-align: center;
+      color: #f0b90b;
+    }
+    .card {
+      background: #12161c;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #1e2329;
+    }
+    .long { color: #0ecb81; }
+    .short { color: #f6465d; }
+    .small { color: #848e9c; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<h1>🚀 Crypto AI Signals</h1>
+<div id="signals">Loading...</div>
+
+<script>
+const API = "https://crypto-ai-platform-auto-live.onrender.com/signals";
+
+async function loadSignals() {
+  const res = await fetch(API);
+  const data = await res.json();
+
+  const container = document.getElementById("signals");
+  container.innerHTML = "";
+
+  if (!data.signals || data.signals.length === 0) {
+    container.innerHTML = "<p class='small'>No signals right now.</p>";
+    return;
+  }
+
+  data.signals.forEach(s => {
+    container.innerHTML += `
+      <div class="card">
+        <b>${s.pair}</b> (${s.timeframe})<br>
+        <span class="${s.side === "LONG" ? "long" : "short"}">
+          ${s.side}
+        </span><br>
+        Entry: ${s.entry}<br>
+        TP: ${s.tp} | SL: ${s.sl}<br>
+        Confidence: ${s.confidence}%<br>
+        <span class="small">${s.reasons.join(", ")}</span>
+      </div>
+    `;
+  });
+}
+
+loadSignals();
+setInterval(loadSignals, 15000);
+</script>
+
+</body>
+</html>

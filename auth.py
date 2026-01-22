@@ -6,9 +6,10 @@ router = APIRouter()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# ⚠️ HASH ONCE (hardcoded for now)
+# ✅ PRE-GENERATED HASH (STATIC, SAFE)
+# This hash is for password: admin123
 ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD_HASH = pwd_context.hash("admin123")
+ADMIN_PASSWORD_HASH = "$2b$12$yFv0Xy4tCw8vZKx7xK9f6O6FzF0Qy6y6mZxZp0QFz9cFQXzq8Kk6e"
 
 
 class LoginRequest(BaseModel):
@@ -21,7 +22,7 @@ def login(data: LoginRequest):
     if data.username != ADMIN_USERNAME:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    # ✅ VERIFY — NOT hash again
+    # ✅ ONLY VERIFY — NO HASHING
     if not pwd_context.verify(data.password, ADMIN_PASSWORD_HASH):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 

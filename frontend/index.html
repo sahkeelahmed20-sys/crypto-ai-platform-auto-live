@@ -40,6 +40,10 @@
       justify-content: space-between;
       align-items: center;
     }
+    
+      <button onclick="logout()" style="background:#444;color:white">
+  Logout
+</button> 
 
     header h1 {
       margin: 0;
@@ -292,6 +296,13 @@ if (TOKEN) {
   dashboard.style.display = "block";
   loadAll();
 }
+
+function logout() {
+  localStorage.removeItem("token");
+  TOKEN = "";
+  location.reload();
+}
+
 </script>
 </body>
 </html>

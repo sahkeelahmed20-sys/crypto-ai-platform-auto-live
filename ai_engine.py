@@ -1,7 +1,15 @@
 from ta.momentum import RSIIndicator
 from ta.trend import EMAIndicator
+
 from binance_data import get_price_history
-from config import STRATEGY_PARAMS, TRADING_PAIRS, TIMEFRAMES
+from config import (
+    STRATEGY_PARAMS,
+    TRADING_PAIRS,
+    TIMEFRAMES,
+    MIN_SCORE,
+    RSI_OVERSOLD,
+    RSI_OVERBOUGHT,
+)
 from ml_model import ml_model
 
 
@@ -12,28 +20,34 @@ def get_all_signals():
         for tf in TIMEFRAMES:
             df = get_price_history(pair, tf)
 
-            # safety: not enough data
             if df is None or len(df) < 50:
                 continue
 
             close = df["close"]
 
-            rsi = RSIIndicator(close, STRATEGY_PARAMS["rsi_period"]).rsi()
-            ema_fast = EMAIndicator(close, STRATEGY_PARAMS["ema_fast"]).ema_indicator()
-            ema_slow = EMAIndicator(close, STRATEGY_PARAMS["ema_slow"]).ema_indicator()
+            rsi = RSIIndicator(
+                close, STRATEGY_PARAMS["rsi_period"]
+            ).rsi()
+
+            ema_fast = EMAIndicator(
+                close, STRATEGY_PARAMS["ema_fast"]
+            ).ema_indicator()
+
+            ema_slow = EMAIndicator(
+                close, STRATEGY_PARAMS["ema_slow"]
+            ).ema_indicator()
 
             score = 0
             reasons = []
 
             # RSI logic
-            from config import MIN_SCORE, RSI_OVERSOLD, RSI_OVERBOUGHT
-                if rsi.iloc[-1] < RSI_OVERSOLD:
-                    score += 1
-                    reasons.append("RSI oversold")
+            if rsi.iloc[-1] < RSI_OVERSOLD:
+                score += 1
+                reasons.append("RSI oversold")
 
-                if rsi.iloc[-1] > RSI_OVERBOUGHT:
-                    score -= 1
-                    reasons.append("RSI overbought")
+            if rsi.iloc[-1] > RSI_OVERBOUGHT:
+                score -= 1
+                reasons.append("RSI overbought")
 
             # EMA logic
             if ema_fast.iloc[-1] > ema_slow.iloc[-1]:
@@ -55,7 +69,7 @@ def get_all_signals():
             elif ml_score < -0.3:
                 score -= 1
 
-            # SIGNAL DECISION
+            # Decision
             if score >= MIN_SCORE:
                 side = "LONG"
             elif score <= -MIN_SCORE:
@@ -70,8 +84,12 @@ def get_all_signals():
                 "timeframe": tf,
                 "side": side,
                 "entry": round(price, 2),
-                "tp": round(price * (1.02 if side == "LONG" else 0.98), 2),
-                "sl": round(price * (0.99 if side == "LONG" else 1.01), 2),
+                "tp": round(
+                    price * (1.02 if side == "LONG" else 0.98), 2
+                ),
+                "sl": round(
+                    price * (0.99 if side == "LONG" else 1.01), 2
+                ),
                 "leverage": 5,
                 "confidence": min(95, abs(score) * 25),
                 "reasons": reasons

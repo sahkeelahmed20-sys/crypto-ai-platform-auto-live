@@ -1,235 +1,64 @@
-
-<div class="card">
-  <b>Admin Login</b><br><br>
-  <input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <p id="loginStatus" class="small"></p>
-</div>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Crypto AI Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Crypto AI Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #0b0f14;
+    color: #fff;
+  }
+  .card {
+    background: #121821;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: 60px auto;
+  }
+  input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: none;
+  }
+  button {
+    background: #1f6feb;
+    color: #fff;
+    font-weight: bold;
+  }
+  #app { display: none; }
+</style>
+</head>
 
-  <style>
-    :root {
-      --bg: #0b0e11;
-      --card: #151a21;
-      --border: #1e2329;
-      --text: #eaecef;
-      --muted: #848e9c;
-      --yellow: #f0b90b;
-      --green: #0ecb81;
-      --red: #f6465d;
-    }
+<body>
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
-    }
-    
-   <div id="loginBox">
-  <h3>Login</h3>
-  <input id="username" placeholder="Username" />
-  <input id="password" type="password" placeholder="Password" />
+<div id="loginBox" class="card">
+  <h2>Admin Login</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
   <button type="button" onclick="login()">Login</button>
   <p id="loginError" style="color:red;"></p>
 </div>
 
-<div id="app" style="display:none;">
-  <!-- dashboard content here -->
+<div id="app" class="card">
+  <h2>🚀 Crypto AI Platform</h2>
+  <p>Connected</p>
+  <pre id="signals">Loading...</pre>
 </div>
-
-    header {
-      padding: 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-      <button onclick="logout()" style="background:#444;color:white">
-  Logout
-</button> 
-
-    header h1 {
-      margin: 0;
-      font-size: 18px;
-      color: var(--yellow);
-    }
-
-    .status {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .container {
-      padding: 12px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-    }
-
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: var(--yellow);
-    }
-
-    input, button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: #0e131a;
-      color: var(--text);
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    button {
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-green { background: var(--green); color: #000; }
-    .btn-red { background: var(--red); color: #fff; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th, td {
-      padding: 8px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
-
-    th { color: var(--muted); font-weight: 500; }
-
-    .long { color: var(--green); font-weight: 600; }
-    .short { color: var(--red); font-weight: 600; }
-
-    .small { font-size: 12px; color: var(--muted); }
-
-    footer {
-      text-align: center;
-      padding: 12px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  <h1>🚀 Crypto AI Platform</h1>
-  <div class="status" id="connection">Connecting…</div>
-</header>
-
-<div class="container">
-
-  <!-- LOGIN -->
-  <div class="card" id="loginCard">
-    <h2>Admin Login</h2>
-    <input id="user" placeholder="Username">
-    <input id="pass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <div class="small" id="loginStatus"></div>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" style="display:none">
-
-    <div class="grid">
-      
-    <div class="card">
-  <h2>Users</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Admin</th>
-        <th>Auto Trade</th>
-      </tr>
-    </thead>
-    <tbody id="users"></tbody>
-  </table>
-</div>
-
-      <!-- CONTROL -->
-      <div class="card">
-        <h2>Auto Trading Control</h2>
-        <button class="btn-green" onclick="enable()">Enable</button>
-        <button class="btn-red" onclick="disable()">Disable</button>
-        <div class="small" id="tradeStatus">Loading…</div>
-      </div>
-
-      <!-- STATS -->
-      <div class="card">
-        <h2>Statistics</h2>
-        <div class="small" id="stats">Loading…</div>
-      </div>
-
-    </div>
-
-    <!-- SIGNALS -->
-    <div class="card" style="margin-top:12px">
-      <h2>Live Signals</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Pair</th>
-            <th>TF</th>
-            <th>Side</th>
-            <th>Entry</th>
-            <th>TP</th>
-            <th>SL</th>
-            <th>Conf</th>
-          </tr>
-        </thead>
-        <tbody id="signals"></tbody>
-      </table>
-      <div class="small">Auto-refresh every 15s</div>
-    </div>
-
-  </div>
-</div>
-
-<footer>
-  Crypto AI • Live System
-</footer>
-
 
 <script>
-  const API_BASE = "https://crypto-ai-platform-auto-live.onrender.com";
-  let TOKEN = localStorage.getItem("token");
-  
-  async function login() {
+const API_BASE = "https://crypto-ai-platform-auto-live.onrender.com";
+let TOKEN = localStorage.getItem("token");
+
+async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(`${API_BASE}/login`, {
+  const res = await fetch(API_BASE + "/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
@@ -238,7 +67,8 @@
   const data = await res.json();
 
   if (!res.ok) {
-    document.getElementById("loginError").innerText = data.detail || "Login failed";
+    document.getElementById("loginError").innerText =
+      data.detail || "Login failed";
     return;
   }
 
@@ -249,47 +79,15 @@
   document.getElementById("app").style.display = "block";
 
   loadSignals();
-  loadStats();
 }
 
-<script>
-const API_BASE = "https://crypto-ai-platform-auto-live.onrender.com";
-let TOKEN = localStorage.getItem("token");
-
-async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-
-  try {
-    const res = await fetch(`${API_BASE}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, password })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.detail || "Login failed");
-      return;
-    }
-
-    TOKEN = data.access_token;
-    localStorage.setItem("token", TOKEN);
-
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("app").style.display = "block";
-
-    loadSignals();
-  } catch (err) {
-    alert("Network error");
-    console.error(err);
-  }
+async function loadSignals() {
+  const res = await fetch(API_BASE + "/signals");
+  const data = await res.json();
+  document.getElementById("signals").innerText =
+    JSON.stringify(data, null, 2);
 }
 
-// auto-login
 if (TOKEN) {
   document.getElementById("loginBox").style.display = "none";
   document.getElementById("app").style.display = "block";
@@ -297,139 +95,5 @@ if (TOKEN) {
 }
 </script>
 
-  async function login() {
-    const r = await fetch(API + "/login", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        username: user.value,
-        password: pass.value
-      })
-    });
-
-    if (!r.ok) {
-      loginStatus.innerText = "Login failed";
-      return;
-    }
-
-    const d = await r.json();
-    TOKEN = d.token;
-    localStorage.setItem("token", TOKEN);
-    loginCard.style.display = "none";
-    dashboard.style.display = "block";
-    loadAll();
-  }
-
-  async function enable() {
-    await fetch(API + "/control/enable", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + TOKEN }
-    });
-    loadStatus();
-  }
-
-  async function disable() {
-    await fetch(API + "/control/disable", {
-      method: "POST",
-      headers: { "Authorization": "Bearer " + TOKEN }
-    });
-    loadStatus();
-  }
-
-  async function loadStatus() {
-    const r = await fetch(API + "/control/status", {
-      headers: { "Authorization": "Bearer " + TOKEN }
-    });
-    const d = await r.json();
-    tradeStatus.innerText =
-      "Auto trading: " + (d.auto_trading ? "ENABLED" : "DISABLED");
-  }
-
-  async function loadStats() {
-    const r = await fetch(API + "/stats", {
-      headers: { "Authorization": "Bearer " + TOKEN }
-    });
-    const d = await r.json();
-    stats.innerText =
-      `Total: ${d.total_trades} | Executed: ${d.executed} | Blocked: ${d.blocked}`;
-  }
-
-  async function loadSignals() {
-    const r = await fetch(API + "/signals");
-    const d = await r.json();
-    const list = d.signals || d;
-
-    signals.innerHTML = "";
-
-    if (!list.length) {
-      signals.innerHTML =
-        "<tr><td colspan='7' class='small'>No signals right now</td></tr>";
-      return;
-    }
-
-    list.forEach(s => {
-      signals.innerHTML += `
-        <tr>
-          <td>${s.pair}</td>
-          <td>${s.timeframe}</td>
-          <td class="${s.side === "LONG" ? "long" : "short"}">${s.side}</td>
-          <td>${s.entry}</td>
-          <td>${s.tp}</td>
-          <td>${s.sl}</td>
-          <td>${s.confidence}%</td>
-        </tr>
-      `;
-    });
-  }
-
-  async function loadAll() {
-    connection.innerText = "Connected";
-    loadStatus();
-    loadStats();
-    loadSignals();
-    setInterval(loadSignals, 15000);
-    setInterval(loadStats, 15000);
-  }
-if (TOKEN) {
-  loginCard.style.display = "none";
-  dashboard.style.display = "block";
-  loadAll();
-}
-
-function logout() {
-  localStorage.removeItem("token");
-  TOKEN = "";
-  location.reload();
-}
-
-async function loadUsers() {
-  const r = await fetch(API + "/users", {
-    headers: { "Authorization": "Bearer " + TOKEN }
-  });
-
-  if (!r.ok) return;
-
-  const data = await r.json();
-  users.innerHTML = "";
-
-  data.forEach(u => {
-    users.innerHTML += `
-      <tr>
-        <td>${u.username}</td>
-        <td>${u.is_admin ? "Yes" : "No"}</td>
-        <td>${u.auto_trading ? "ON" : "OFF"}</td>
-      </tr>
-    `;
-  });
-}
-
-if (TOKEN) {
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("app").style.display = "block";
-  loadSignals();
-  loadStats();
-}
-
-</script>
 </body>
 </html>

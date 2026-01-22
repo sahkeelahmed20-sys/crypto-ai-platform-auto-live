@@ -189,6 +189,7 @@
   Crypto AI • Live System
 </footer>
 
+let TOKEN = localStorage.getItem("token") || "";
 <script>
   const API = "https://YOUR-BACKEND.onrender.com";
   let TOKEN = "";
@@ -210,6 +211,7 @@
 
     const d = await r.json();
     TOKEN = d.token;
+    localStorage.setItem("token", TOKEN);
     loginCard.style.display = "none";
     dashboard.style.display = "block";
     loadAll();
@@ -285,7 +287,11 @@
     setInterval(loadSignals, 15000);
     setInterval(loadStats, 15000);
   }
+if (TOKEN) {
+  loginCard.style.display = "none";
+  dashboard.style.display = "block";
+  loadAll();
+}
 </script>
-
 </body>
 </html>

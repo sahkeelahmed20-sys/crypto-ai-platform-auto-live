@@ -16,3 +16,8 @@ STRATEGY_PARAMS = {
 
 TRADING_PAIRS = ["BTCUSDT", "ETHUSDT"]
 TIMEFRAMES = ["5m", "15m"]
+
+# === STRATEGY TUNING ===
+MIN_SCORE = 1        # lower = more signals
+RSI_OVERSOLD = 35
+RSI_OVERBOUGHT = 65

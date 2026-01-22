@@ -4,6 +4,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ai_engine import get_all_signals
 from auto_trader import auto_trade
+from fastapi import Depends, Header, HTTPException
+from config import AUTO_TRADING_STATE
+from stats import get_stats
+from auth import authenticate, create_token, verify_token
+
+def require_auth(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    token = authorization.replace("Bearer ", "")
+    user = verify_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return user
 
 app=FastAPI()
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_methods=["*"],allow_headers=["*"])
@@ -35,6 +50,24 @@ def signals():
         }
     
     from binance_data import get_price_history
+    
+   @app.get("/control/status")
+def control_status(user=Depends(require_auth)):
+    return {"auto_trading": AUTO_TRADING_STATE["enabled"]}
+
+@app.post("/control/enable")
+def enable_trading(user=Depends(require_auth)):
+    AUTO_TRADING_STATE["enabled"] = True
+    return {"auto_trading": True}
+
+@app.post("/control/disable")
+def disable_trading(user=Depends(require_auth)):
+    AUTO_TRADING_STATE["enabled"] = False
+    return {"auto_trading": False}
+
+@app.get("/stats")
+def stats(user=Depends(require_auth)):
+    return get_stats()
 
 @app.get("/debug")
 def debug():

@@ -16,6 +16,24 @@ from stats import get_stats
 from auth import router as auth_router
 app.include_router(auth_router)
 
+
+from fastapi import FastAPI
+from auth import router as auth_router
+
+app = FastAPI(title="Crypto AI Platform")
+
+# ✅ INCLUDE ROUTERS AFTER app IS CREATED
+app.include_router(auth_router)
+
+# ---- OPTIONAL ROOT ENDPOINT ----
+@app.get("/")
+def root():
+    return {
+        "status": "ok",
+        "service": "Crypto AI Platform",
+        "message": "Backend is running"
+    }
+
 def require_auth(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")

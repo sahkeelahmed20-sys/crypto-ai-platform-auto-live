@@ -1,3 +1,4 @@
+
 <div class="card">
   <b>Admin Login</b><br><br>
   <input id="user" placeholder="Username"><br><br>
@@ -149,6 +150,20 @@
   <div id="dashboard" style="display:none">
 
     <div class="grid">
+      
+    <div class="card">
+  <h2>Users</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Admin</th>
+        <th>Auto Trade</th>
+      </tr>
+    </thead>
+    <tbody id="users"></tbody>
+  </table>
+</div>
 
       <!-- CONTROL -->
       <div class="card">
@@ -301,6 +316,27 @@ function logout() {
   localStorage.removeItem("token");
   TOKEN = "";
   location.reload();
+}
+
+async function loadUsers() {
+  const r = await fetch(API + "/users", {
+    headers: { "Authorization": "Bearer " + TOKEN }
+  });
+
+  if (!r.ok) return;
+
+  const data = await r.json();
+  users.innerHTML = "";
+
+  data.forEach(u => {
+    users.innerHTML += `
+      <tr>
+        <td>${u.username}</td>
+        <td>${u.is_admin ? "Yes" : "No"}</td>
+        <td>${u.auto_trading ? "ON" : "OFF"}</td>
+      </tr>
+    `;
+  });
 }
 
 </script>

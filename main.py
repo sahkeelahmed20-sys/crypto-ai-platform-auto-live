@@ -33,6 +33,18 @@ def register(data: dict):
     register_user(data["username"], data["password"])
     return {"status": "user_created"}
     
+@app.get("/users")
+def list_users(user=Depends(get_current_user)):
+    if not user["admin"]:
+        raise HTTPException(status_code=403)
+
+    db = get_db()
+    users = db.execute(
+        "SELECT id, username, is_admin, auto_trading FROM users"
+    ).fetchall()
+
+    return [dict(u) for u in users]
+    
 DEMO_USER={
  "api_key":"JkUZNQbfPbdpWGYdC0Cxv0bXczcyLy5ExJHFU0zy78ZdhUHAPRlfzmd2GIfdBU0j",
  "api_secret":"ojJMIVGoAhItzWGMKJ4HrbrG1egikeCZf8Ith5AShSz3sqBMsLuzDwVP9EhbBHU9",

@@ -72,3 +72,13 @@ from stats import get_stats
 @app.get("/stats")
 def stats():
     return get_stats()
+def require_auth(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    token = authorization.replace("Bearer ", "")
+    user = verify_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return user

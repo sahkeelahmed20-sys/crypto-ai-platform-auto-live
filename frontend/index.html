@@ -115,6 +115,29 @@ async function loadSignals() {
 
 loadSignals();
 setInterval(loadSignals, 15000);
+let TOKEN = "";
+
+async function login() {
+  const res = await fetch(API_BASE + "/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      username: document.getElementById("user").value,
+      password: document.getElementById("pass").value
+    })
+  });
+
+  if (!res.ok) {
+    document.getElementById("loginStatus").innerText = "Login failed";
+    return;
+  }
+
+  const data = await res.json();
+  TOKEN = data.token;
+  document.getElementById("loginStatus").innerText = "Logged in";
+  loadStatus();
+  loadStats();
+}
 </script>
 
 </body>

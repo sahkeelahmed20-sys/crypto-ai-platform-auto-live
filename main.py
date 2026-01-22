@@ -42,6 +42,13 @@ def get_current_user(authorization: str = Header(None)):
 init_db()   
 app.add_middleware(CORSMiddleware,allow_origins=["*"],allow_methods=["*"],allow_headers=["*"])
      
+@app.get("/")
+def root():
+    return {
+        "status": "ok",
+        "service": "Crypto AI Platform",
+        "message": "Backend is running"
+    }
 @app.post("/register")
 def register(data: dict):
     register_user(data["username"], data["password"])

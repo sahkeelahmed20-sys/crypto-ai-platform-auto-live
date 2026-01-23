@@ -1,92 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Crypto AI Platform</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  body {
-    margin: 0;
-    font-family: system-ui, sans-serif;
-    background: #0b0f14;
-    color: #fff;
-  }
-  .card {
-    background: #121821;
-    padding: 20px;
-    border-radius: 12px;
-    max-width: 400px;
-    margin: 60px auto;
-  }
-  input, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: none;
-  }
-  button {
-    background: #1f6feb;
-    color: #fff;
-    font-weight: bold;
-  }
-  #app { display: none; }
-</style>
-</head>
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crypto AI Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<div id="loginBox" class="card">
+<div class="login-card">
   <h2>Admin Login</h2>
-  <input id="username" />
-<input id="password" type="password" />
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
-  <p id="loginStatus"></p>
 </div>
 
-<div id="dashboard" style="display:none">
-  <pre id="stats"></pre>
-</div>
-
-<div id="app" class="card">
-  <h2>🚀 Crypto AI Platform</h2>
-  <p>Connected</p>
-  <pre id="signals">Loading...</pre>
-</div>
-
-<script>
-const API = "https://crypto-ai-platform-auto-live.onrender.com";
-
-async function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-
-  if (!user || !pass) {
-    alert("Username and password required");
-    return;
-  }
-
-  const r = await fetch(API + "/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: user,
-      password: pass
-    })
-  });
-
-  if (!r.ok) {
-    alert("Login failed");
-    return;
-  }
-
-  const d = await r.json();
-  localStorage.setItem("token", d.token);
-
-  alert("Login success");
-  console.log("TOKEN:", d.token);
-}
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>

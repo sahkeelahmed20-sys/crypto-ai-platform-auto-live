@@ -95,4 +95,3 @@ def register(username: str, password: str, role: str = "viewer", db: Session = D
     db.commit()
     return {"status": "user created"}
 
-}

@@ -1,59 +1,55 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import bcrypt, jwt, os
-from datetime import datetime, timedelta
+from passlib.context import CryptContext
+from jose import jwt
+from database import SessionLocal
+from models import User
 
-from database import get_db
-from users import User
+SECRET_KEY = "CHANGE_ME_NOW"
+ALGORITHM = "HS256"
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter()
-SECRET = os.getenv("JWT_SECRET", "supersecretkey")
-ALGO = "HS256"
 
-class LoginRequest(BaseModel):
-    username: str
-    password: str
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-class RegisterRequest(BaseModel):
-    username: str
-    password: str
-    role: str = "user"
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+def verify_password(password, hash):
+    return pwd_context.verify(password, hash)
 
 def create_token(user: User):
     return jwt.encode(
-        {
-            "sub": user.username,
-            "role": user.role,
-            "exp": datetime.utcnow() + timedelta(hours=12)
-        },
-        SECRET,
-        algorithm=ALGO
+        {"sub": user.username, "role": user.role},
+        SECRET_KEY,
+        algorithm=ALGORITHM
     )
 
 @router.post("/register")
-def register(data: RegisterRequest, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.username == data.username).first():
-        raise HTTPException(400, "User exists")
-
-    hashed = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt())
+def register(username: str, password: str, role: str = "viewer", db: Session = Depends(get_db)):
+    if db.query(User).filter(User.username == username).first():
+        raise HTTPException(400, "User already exists")
 
     user = User(
-        username=data.username,
-        password=hashed.decode(),
-        role=data.role
+        username=username,
+        password_hash=hash_password(password),
+        role=role
     )
     db.add(user)
     db.commit()
-    return {"status": "created"}
+    return {"status": "user created"}
 
 @router.post("/login")
-def login(data: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == data.username).first()
-    if not user:
+def login(data: dict, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == data["username"]).first()
+    if not user or not verify_password(data["password"], user.password_hash):
         raise HTTPException(401, "Invalid credentials")
 
-    if not bcrypt.checkpw(data.password.encode(), user.password.encode()):
-        raise HTTPException(401, "Invalid credentials")
-
-    return {"token": create_token(user)}
+    return {"token": create_token(user), "role": user.role}

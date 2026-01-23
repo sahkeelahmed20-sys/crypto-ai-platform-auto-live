@@ -1,27 +1,16 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from database import Base, engine
 from auth import router as auth_router
-from stats import router as stats_router
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Crypto AI Platform")
 
-from fastapi.staticfiles import StaticFiles
+Base.metadata.create_all(bind=engine)
+
+app.include_router(auth_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.include_router(auth_router)
-app.include_router(stats_router)
-
 @app.get("/")
 def root():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "Crypto AI Platform"}

@@ -5,11 +5,15 @@ from auth import router as auth_router
 from stats import router as stats_router
 import time
 from market import router as market_router
+from trades import router as trades_router
+
 
 
 app = FastAPI(title="Crypto AI Platform")
 
 Base.metadata.create_all(bind=engine)
+
+app.include_router(trades_router)
 
 app.include_router(market_router)
 

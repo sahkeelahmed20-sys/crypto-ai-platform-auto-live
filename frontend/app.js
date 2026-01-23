@@ -1,4 +1,4 @@
-const API = "https://crypto-ai-platform-auto-live.onrender.com";
+const API = "https://crypto-ai-platform-auto-live.onrender.com"; 
 
 async function login() {
   const user = document.getElementById("username").value;

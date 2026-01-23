@@ -40,8 +40,12 @@
   <h2>Admin Login</h2>
   <input id="username" placeholder="Username">
   <input id="password" type="password" placeholder="Password">
-  <button type="button" onclick="login()">Login</button>
-  <p id="loginError" style="color:red;"></p>
+  <button onclick="login()">Login</button>
+  <p id="loginStatus"></p>
+</div>
+
+<div id="dashboard" style="display:none">
+  <pre id="stats"></pre>
 </div>
 
 <div id="app" class="card">
@@ -51,51 +55,47 @@
 </div>
 
 <script>
-const API_BASE = "https://crypto-ai-platform-auto-live.onrender.com";
-let TOKEN = localStorage.getItem("token");
+const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
-<script>
 async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  const user = document.getElementById("username");
+  const pass = document.getElementById("password");
+  const status = document.getElementById("loginStatus");
 
-  const form = new URLSearchParams();
-  form.append("username", username);
-  form.append("password", password);
-
-  const res = await fetch(API_BASE + "/login", {
+  const res = await fetch(API + "/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: form
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: user.value,
+      password: pass.value
+    })
   });
 
-  const data = await res.json();
-
   if (!res.ok) {
-    alert(data.detail || "Login failed");
+    status.innerText = "❌ Login failed";
     return;
   }
 
-  TOKEN = data.access_token;
-  localStorage.setItem("token", TOKEN);
-
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("app").style.display = "block";
-}
-
-async function loadSignals() {
-  const res = await fetch(API_BASE + "/signals");
   const data = await res.json();
-  document.getElementById("signals").innerText =
-    JSON.stringify(data, null, 2);
+  localStorage.setItem("token", data.token);
+
+  document.getElementById("loginCard").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+
+  loadDashboard();
 }
 
-if (TOKEN) {
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("app").style.display = "block";
-  loadSignals();
+async function loadDashboard() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(API + "/stats", {
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  });
+
+  const data = await res.json();
+  document.getElementById("stats").innerText = JSON.stringify(data, null, 2);
 }
 </script>
 

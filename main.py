@@ -45,7 +45,7 @@ def require_auth(authorization: str = Header(None)):
 
     return user
 
-app=FastAPI()
+
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 @app.get("/", response_class=HTMLResponse)

@@ -95,10 +95,8 @@ def register(username: str, password: str, role: str = "viewer", db: Session = D
     db.commit()
     return {"status": "user created"}
 
-@router.post("/login")
-def login(data: dict, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == data["username"]).first()
-    if not user or not verify_password(data["password"], user.password_hash):
-        raise HTTPException(401, "Invalid credentials")
-
-    return {"token": create_token(user), "role": user.role}
+POST /login
+{
+  "username": "admin",
+  "password": "admin123"
+}

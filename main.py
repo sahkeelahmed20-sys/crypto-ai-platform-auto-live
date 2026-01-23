@@ -13,4 +13,4 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def root():
-    return {"status": "ok", "service": "Crypto AI Platform"}
+    return {"status": "ok"}

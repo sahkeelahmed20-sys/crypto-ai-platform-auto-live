@@ -3,17 +3,10 @@ const API = "https://crypto-ai-platform-auto-live.onrender.com";
 const chart = LightweightCharts.createChart(
   document.getElementById('chart'),
   {
-    layout: {
-      background: { color: '#0f172a' },
-      textColor: '#cbd5e1'
-    },
-    grid: {
-      vertLines: { color: '#1e293b' },
-      horzLines: { color: '#1e293b' }
-    },
-    timeScale: { timeVisible: true }
-  }
-);
+  layout: { background: { color: '#0b1220' }, textColor: '#cbd5e1' },
+  grid: { vertLines: { color: '#1f2937' }, horzLines: { color: '#1f2937' } },
+  timeScale: { timeVisible: true }
+});
 
 const candleSeries = chart.addCandlestickSeries({
   upColor: '#22c55e',
@@ -24,6 +17,13 @@ const candleSeries = chart.addCandlestickSeries({
   wickDownColor: '#ef4444'
 });
 
+const ema20 = chart.addLineSeries({ color:'#60a5fa', lineWidth:2 });
+
+const rsiChart = LightweightCharts.createChart(document.getElementById('rsi'), {
+  height:160, layout:{ background:{color:'#0b1220'}, textColor:'#cbd5e1' }
+});
+const rsiLine = rsiChart.addLineSeries({ color:'#f59e0b', lineWidth:2 });
+
 // Load candles from backend
 fetch('/market/candles?symbol=BTCUSDT')
   .then(res => res.json())
@@ -32,6 +32,33 @@ fetch('/market/candles?symbol=BTCUSDT')
   });
 
 let chart;
+
+async function loadCandles(){
+  const r = await fetch(`${API}/market/candles?symbol=BTCUSDT&interval=1m&limit=200`);
+  const d = await r.json();
+
+  candle.setData(d.map(x=>({
+    time:x.time, open:x.open, high:x.high, low:x.low, close:x.close
+  })));
+  ema20.setData(d.map(x=>({ time:x.time, value:x.ema20 })));
+  rsiLine.setData(d.filter(x=>x.rsi14).map(x=>({ time:x.time, value:x.rsi14 })));
+}
+
+async function loadTrades(){
+  const r = await fetch(`${API}/trades`);
+  const t = await r.json();
+  candle.setMarkers(t.map(x=>({
+    time: x.time,
+    position: x.side === "BUY" ? "belowBar" : "aboveBar",
+    color: x.side === "BUY" ? "#22c55e" : "#ef4444",
+    shape: x.side === "BUY" ? "arrowUp" : "arrowDown",
+    text: x.side
+  })));
+}
+
+loadCandles();
+loadTrades();
+setInterval(loadCandles, 5000);
 
 async function loadStats() {
   const r = await fetch(API + "/stats/summary");

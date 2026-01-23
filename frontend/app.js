@@ -1,29 +1,39 @@
 const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
+document.getElementById("loginBtn").addEventListener("click", login);
+
 async function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
 
-  const res = await fetch(API + "/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: user,
-      password: pass
-    })
-  });
+  msg.innerText = "Logging in...";
 
-  if (!res.ok) {
-    document.getElementById("loginStatus").innerText = "Login failed";
-    return;
+  try {
+    const res = await fetch(API + "/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })
+    });
+
+    if (!res.ok) {
+      msg.innerText = "Login failed";
+      return;
+    }
+
+    const data = await res.json();
+    localStorage.setItem("token", data.token);
+
+    msg.innerText = "Login success ✅";
+    console.log("TOKEN:", data.token);
+
+  } catch (err) {
+    msg.innerText = "Server error";
+    console.error(err);
   }
-
-  const data = await res.json();
-  localStorage.setItem("token", data.token);
-
-  document.getElementById("loginStatus").innerText = "Login successful";
-  document.getElementById("loginCard").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
 }

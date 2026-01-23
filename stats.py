@@ -1,23 +1,26 @@
-from datetime import datetime
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from database import get_db
+from trades import Trade
 
-TRADES = []
+router = APIRouter(prefix="/stats")
 
-def log_trade(signal, result):
-    TRADES.append({
-        "time": datetime.utcnow().isoformat(),
-        "pair": signal["pair"],
-        "side": signal["side"],
-        "entry": signal["entry"],
-        "result": result.get("status", "unknown")
-    })
+@router.get("/history")
+def trade_history(db: Session = Depends(get_db)):
+    trades = db.query(Trade).all()
+    return [
+        {
+            "pair": t.pair,
+            "profit": t.profit,
+            "time": t.time
+        }
+        for t in trades
+    ]
 
-def get_stats():
-    total = len(TRADES)
-    executed = len([t for t in TRADES if t["result"] == "executed"])
-    disabled = len([t for t in TRADES if t["result"] == "disabled"])
-
+@router.get("/summary")
+def summary(db: Session = Depends(get_db)):
+    trades = db.query(Trade).all()
     return {
-        "total_trades": total,
-        "executed": executed,
-        "blocked": disabled
+        "total_trades": len(trades),
+        "profit": sum(t.profit for t in trades)
     }

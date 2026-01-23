@@ -20,3 +20,23 @@ async function login() {
 
   window.location.href = "dashboard.html";
 }
+
+async function enable() {
+  const r = await fetch(API + "/control/enable", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    }
+  });
+  document.getElementById("output").innerText = await r.text();
+}
+
+async function disable() {
+  const r = await fetch(API + "/control/disable", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    }
+  });
+  document.getElementById("output").innerText = await r.text();
+}

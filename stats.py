@@ -1,26 +1,30 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from database import get_db
-from trades import Trade
+from fastapi import APIRouter
+from datetime import datetime, timedelta
 
-router = APIRouter(prefix="/stats")
+router = APIRouter(prefix="/stats", tags=["Stats"])
 
-@router.get("/history")
-def trade_history(db: Session = Depends(get_db)):
-    trades = db.query(Trade).all()
-    return [
-        {
-            "pair": t.pair,
-            "profit": t.profit,
-            "time": t.time
-        }
-        for t in trades
-    ]
+# TEMP: replace later with database
+TRADES = [
+    {"time": datetime.now() - timedelta(minutes=30), "profit": 12},
+    {"time": datetime.now() - timedelta(minutes=20), "profit": -5},
+    {"time": datetime.now() - timedelta(minutes=10), "profit": 20},
+]
 
 @router.get("/summary")
-def summary(db: Session = Depends(get_db)):
-    trades = db.query(Trade).all()
+def stats_summary():
+    total = len(TRADES)
+    wins = len([t for t in TRADES if t["profit"] > 0])
+    profit = sum(t["profit"] for t in TRADES)
+
     return {
-        "total_trades": len(trades),
-        "profit": sum(t.profit for t in trades)
+        "total_trades": total,
+        "win_rate": round((wins / total) * 100, 2),
+        "profit": profit
+    }
+
+@router.get("/chart")
+def stats_chart():
+    return {
+        "labels": [t["time"].strftime("%H:%M") for t in TRADES],
+        "profits": [t["profit"] for t in TRADES]
     }

@@ -1,5 +1,36 @@
 const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
+const chart = LightweightCharts.createChart(
+  document.getElementById('chart'),
+  {
+    layout: {
+      background: { color: '#0f172a' },
+      textColor: '#cbd5e1'
+    },
+    grid: {
+      vertLines: { color: '#1e293b' },
+      horzLines: { color: '#1e293b' }
+    },
+    timeScale: { timeVisible: true }
+  }
+);
+
+const candleSeries = chart.addCandlestickSeries({
+  upColor: '#22c55e',
+  downColor: '#ef4444',
+  borderUpColor: '#22c55e',
+  borderDownColor: '#ef4444',
+  wickUpColor: '#22c55e',
+  wickDownColor: '#ef4444'
+});
+
+// Load candles from backend
+fetch('/market/candles?symbol=BTCUSDT')
+  .then(res => res.json())
+  .then(data => {
+    candleSeries.setData(data);
+  });
+
 let chart;
 
 async function loadStats() {

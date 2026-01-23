@@ -1,37 +1,38 @@
-const API = ""; // SAME DOMAIN (Render backend)
+const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
 async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const status = document.getElementById("status");
-
-  status.innerText = "Logging in...";
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  const status = document.getElementById("loginStatus");
 
   try {
-    const res = await fetch("/login", {
+    const r = await fetch(API + "/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        username: username,
-        password: password
+        username: user,
+        password: pass
       })
     });
 
-    if (!res.ok) {
+    if (!r.ok) {
       status.innerText = "Login failed";
       return;
     }
 
-    const data = await res.json();
+    const data = await r.json();
+
     localStorage.setItem("token", data.token);
 
-    status.innerText = "Login success!";
-    window.location.href = "/static/dashboard.html";
+    status.innerText = "Login successful";
 
-  } catch (err) {
+    // OPTIONAL: redirect
+    window.location.href = "/dashboard.html";
+
+  } catch (e) {
     status.innerText = "Server error";
-    console.error(err);
+    console.error(e);
   }
 }

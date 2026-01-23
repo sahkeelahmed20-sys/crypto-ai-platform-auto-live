@@ -1,32 +1,34 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from passlib.context import CryptContext
+import bcrypt
+import jwt
+import os
 
 router = APIRouter()
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")
+JWT_ALGO = "HS256"
 
-# ✅ PRE-GENERATED HASH (STATIC, SAFE)
-# This hash is for password: admin123
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD_HASH = "$2b$12$yFv0Xy4tCw8vZKx7xK9f6O6FzF0Qy6y6mZxZp0QFz9cFQXzq8Kk6e"
-
+# ✅ DEMO USER (PLAIN PASSWORD)
+USERS = {
+    "admin": bcrypt.hashpw(b"admin123", bcrypt.gensalt())
+}
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
-
 @router.post("/login")
 def login(data: LoginRequest):
-    if data.username != ADMIN_USERNAME:
+    user = USERS.get(data.username)
+
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    # ✅ ONLY VERIFY — NO HASHING
-    if not pwd_context.verify(data.password, ADMIN_PASSWORD_HASH):
+    # ✅ HASH ONLY THE USER PASSWORD
+    if not bcrypt.checkpw(data.password.encode(), user):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return {
-        "access_token": "demo-token-admin",
-        "token_type": "bearer"
-    }
+    token = jwt.encode({"sub": data.username}, JWT_SECRET, algorithm=JWT_ALGO)
+
+    return {"token": token}

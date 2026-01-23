@@ -10,7 +10,7 @@ async function login() {
   msg.innerText = "Logging in...";
 
   try {
-    const res = await fetch(API + "/login", {
+    const res = await fetch("https://crypto-ai-platform-auto-live.onrender.com/login")
       method: "POST",
       headers: {
         "Content-Type": "application/json"

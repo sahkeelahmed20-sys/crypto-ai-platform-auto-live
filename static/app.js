@@ -30,6 +30,27 @@ fetch('/market/candles?symbol=BTCUSDT')
   .then(data => {
     candleSeries.setData(data);
   });
+  
+const vwapLine = chart.addLineSeries({
+  color: '#eab308',
+  lineWidth: 2
+});
+
+const macdChart = LightweightCharts.createChart(
+  document.getElementById('macd'),
+  {
+    height: 160,
+    layout: { background: { color: '#0b1220' }, textColor: '#cbd5e1' },
+    grid: { vertLines: { color: '#1f2937' }, horzLines: { color: '#1f2937' } }
+  }
+);
+
+const macdLine = macdChart.addLineSeries({ color: '#60a5fa', lineWidth: 2 });
+const macdSignal = macdChart.addLineSeries({ color: '#f97316', lineWidth: 2 });
+const macdHist = macdChart.addHistogramSeries({
+  color: '#22c55e',
+  priceFormat: { type: 'volume' }
+});
 
 let chart;
 

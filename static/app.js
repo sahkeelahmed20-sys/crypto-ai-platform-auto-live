@@ -132,33 +132,29 @@ setInterval(() => {
   loadChart();
 }, 5000);
 
+const API = "https://crypto-ai-platform-auto-live.onrender.com";
+
 async function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-  const status = document.getElementById("loginStatus");
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-  try {
-    const r = await fetch(API + "/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: user,
-        password: pass
-      })
-    });
+  const res = await fetch(`${API}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
 
-    if (!r.ok) {
-      status.innerText = "Login failed";
-      return;
-    }
+  if (!res.ok) {
+    document.getElementById("loginStatus").innerText = "Login failed";
+    return;
+  }
 
-    const data = await r.json();
+  const data = await res.json();
+  localStorage.setItem("token", data.token);
 
-    localStorage.setItem("token", data.token);
-
-    status.innerText = "Login successful";
+  document.getElementById("login").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+}
 
     // OPTIONAL: redirect
     window.location.href = "/dashboard.html";

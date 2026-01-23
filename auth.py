@@ -1,12 +1,13 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from jose import jwt
 from database import SessionLocal
 from models import User
+from pydantic import BaseModel
 
 security = HTTPBearer()
 
@@ -94,4 +95,18 @@ def register(username: str, password: str, role: str = "viewer", db: Session = D
     db.add(user)
     db.commit()
     return {"status": "user created"}
+    
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+@router.post("/login")
+def login(data: LoginRequest):
+    if data.username != "admin" or data.password != "admin123":
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    return {
+        "token": "TEST_TOKEN_CHANGE_LATER"
+    }
 

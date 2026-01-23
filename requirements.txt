@@ -12,3 +12,4 @@ bcrypt
 PyJWT
 sqlalchemy
 python-multipart
+httpx

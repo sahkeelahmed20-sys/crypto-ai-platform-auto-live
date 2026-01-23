@@ -21,6 +21,25 @@ async function login() {
   window.location.href = "dashboard.html";
 }
 
+async function loadChart() {
+  const r = await fetch(API + "/stats/history");
+  const data = await r.json();
+
+  new Chart(document.getElementById("profitChart"), {
+    type: "line",
+    data: {
+      labels: data.map(d => new Date(d.time).toLocaleString()),
+      datasets: [{
+        label: "Profit",
+        data: data.map(d => d.profit),
+        borderColor: "lime"
+      }]
+    }
+  });
+}
+
+loadChart();
+
 async function enable() {
   const r = await fetch(API + "/control/enable", {
     method: "POST",

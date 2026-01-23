@@ -1,14 +1,10 @@
-from database import get_db
+from sqlalchemy import Column, Integer, String
+from database import Base
 
-def init_db():
-    db = get_db()
-    db.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT,
-        is_admin INTEGER DEFAULT 0,
-        auto_trading INTEGER DEFAULT 0
-    )
-    """)
-    db.commit()
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    password_hash = Column(String)
+    role = Column(String, default="viewer")  # admin | trader | viewer

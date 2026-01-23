@@ -1,29 +1,37 @@
-const API = "https://crypto-ai-platform-auto-live.onrender.com";
+const API = ""; // SAME DOMAIN (Render backend)
 
-document.getElementById("loginBtn").onclick = async () => {
-  alert("Login clicked");
-
+async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
-  const msg = document.getElementById("msg");
+  const status = document.getElementById("status");
+
+  status.innerText = "Logging in...";
 
   try {
-    const r = await fetch(API + "/login", {
+    const res = await fetch("/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })
     });
 
-    if (!r.ok) {
-      msg.innerText = "Login failed";
+    if (!res.ok) {
+      status.innerText = "Login failed";
       return;
     }
 
-    const d = await r.json();
-    localStorage.setItem("token", d.token);
-    msg.innerText = "Login success";
-  } catch (e) {
-    msg.innerText = "JS error";
-    console.error(e);
+    const data = await res.json();
+    localStorage.setItem("token", data.token);
+
+    status.innerText = "Login success!";
+    window.location.href = "/static/dashboard.html";
+
+  } catch (err) {
+    status.innerText = "Server error";
+    console.error(err);
   }
-};
+}

@@ -54,15 +54,28 @@ const macdHist = macdChart.addHistogramSeries({
 
 let chart;
 
-async function loadCandles(){
+async function loadCandles() {
   const r = await fetch(`${API}/market/candles?symbol=BTCUSDT&interval=1m&limit=200`);
   const d = await r.json();
 
-  candle.setData(d.map(x=>({
-    time:x.time, open:x.open, high:x.high, low:x.low, close:x.close
+  candle.setData(d.map(x => ({
+    time: x.time, open: x.open, high: x.high, low: x.low, close: x.close
   })));
-  ema20.setData(d.map(x=>({ time:x.time, value:x.ema20 })));
-  rsiLine.setData(d.filter(x=>x.rsi14).map(x=>({ time:x.time, value:x.rsi14 })));
+
+  ema20.setData(d.map(x => ({ time: x.time, value: x.ema20 })));
+  vwapLine.setData(d.map(x => ({ time: x.time, value: x.vwap })));
+
+  rsiLine.setData(d.filter(x => x.rsi14).map(x => ({
+    time: x.time, value: x.rsi14
+  })));
+
+  macdLine.setData(d.map(x => ({ time: x.time, value: x.macd })));
+  macdSignal.setData(d.map(x => ({ time: x.time, value: x.macd_signal })));
+  macdHist.setData(d.map(x => ({
+    time: x.time,
+    value: x.macd_hist,
+    color: x.macd_hist >= 0 ? '#22c55e' : '#ef4444'
+  })));
 }
 
 async function loadTrades(){

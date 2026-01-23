@@ -10,3 +10,5 @@ python-jose
 passlib[bcrypt]
 bcrypt
 PyJWT
+sqlalchemy
+python-multipart

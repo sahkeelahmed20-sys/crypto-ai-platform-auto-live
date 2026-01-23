@@ -8,6 +8,10 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Crypto AI Platform")
 
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

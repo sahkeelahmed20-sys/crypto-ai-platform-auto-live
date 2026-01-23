@@ -25,31 +25,75 @@ def rsi(values, period=14):
             rs = avg_gain / avg_loss
             rsis[i] = 100 - (100 / (1 + rs))
     return rsis
+    
+def vwap(candles):
+    cumulative_pv = 0
+    cumulative_vol = 0
+    vwaps = []
+
+    for c in candles:
+        typical_price = (c["high"] + c["low"] + c["close"]) / 3
+        volume = c.get("volume", 1)  # Binance gives volume
+        cumulative_pv += typical_price * volume
+        cumulative_vol += volume
+        vwaps.append(cumulative_pv / cumulative_vol)
+
+    return vwaps
+
+
+def macd(values, fast=12, slow=26, signal=9):
+    def ema(vals, period):
+        k = 2 / (period + 1)
+        e = []
+        for i, v in enumerate(vals):
+            e.append(v if i == 0 else v * k + e[-1] * (1 - k))
+        return e
+
+    ema_fast = ema(values, fast)
+    ema_slow = ema(values, slow)
+
+    macd_line = [f - s for f, s in zip(ema_fast, ema_slow)]
+    signal_line = ema(macd_line, signal)
+    hist = [m - s for m, s in zip(macd_line, signal_line)]
+
+    return macd_line, signal_line, hist
 
 @router.get("/candles")
-async def candles(
-    symbol: str = Query("BTCUSDT"),
-    interval: str = Query("1m"),
-    limit: int = Query(200)
-):
+async def candles(symbol: str = "BTCUSDT", interval: str = "1m", limit: int = 200):
     async with httpx.AsyncClient() as c:
-        r = await c.get(f"{BINANCE}/api/v3/klines",
-                        params={"symbol": symbol, "interval": interval, "limit": limit})
+        r = await c.get(
+            f"{BINANCE}/api/v3/klines",
+            params={"symbol": symbol, "interval": interval, "limit": limit}
+        )
         k = r.json()
 
-    closes = [float(x[4]) for x in k]
-    ema20 = ema(closes, 20)
-    rsi14 = rsi(closes, 14)
+    candles = []
+    closes = []
 
-    data = []
-    for i, x in enumerate(k):
-        data.append({
+    for x in k:
+        candles.append({
             "time": int(x[0] / 1000),
             "open": float(x[1]),
             "high": float(x[2]),
             "low": float(x[3]),
             "close": float(x[4]),
-            "ema20": ema20[i],
-            "rsi14": rsi14[i]
+            "volume": float(x[5])
         })
-    return data
+        closes.append(float(x[4]))
+
+    ema20 = ema(closes, 20)
+    rsi14 = rsi(closes, 14)
+    vwap_vals = vwap(candles)
+    macd_line, signal_line, hist = macd(closes)
+
+    for i in range(len(candles)):
+        candles[i].update({
+            "ema20": ema20[i],
+            "rsi14": rsi14[i],
+            "vwap": vwap_vals[i],
+            "macd": macd_line[i],
+            "macd_signal": signal_line[i],
+            "macd_hist": hist[i]
+        })
+
+    return candles

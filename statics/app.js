@@ -1,3 +1,4 @@
+alert("app.js loaded");
 const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
 document.getElementById("loginBtn").addEventListener("click", login);

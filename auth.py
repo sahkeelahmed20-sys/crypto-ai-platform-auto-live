@@ -1,34 +1,38 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 import bcrypt
 import jwt
 import os
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
-JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")
-JWT_ALGO = "HS256"
+SECRET = os.getenv("JWT_SECRET", "supersecretkey")
+ALGO = "HS256"
 
-# ✅ DEMO USER (PLAIN PASSWORD)
-USERS = {
-    "admin": bcrypt.hashpw(b"admin123", bcrypt.gensalt())
+# demo admin user
+ADMIN_USER = {
+    "username": "admin",
+    "password": bcrypt.hashpw(b"admin123", bcrypt.gensalt())
 }
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
+def create_token(username: str):
+    payload = {
+        "sub": username,
+        "exp": datetime.utcnow() + timedelta(hours=12)
+    }
+    return jwt.encode(payload, SECRET, algorithm=ALGO)
+
 @router.post("/login")
 def login(data: LoginRequest):
-    user = USERS.get(data.username)
-
-    if not user:
+    if data.username != ADMIN_USER["username"]:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    # ✅ HASH ONLY THE USER PASSWORD
-    if not bcrypt.checkpw(data.password.encode(), user):
+    if not bcrypt.checkpw(data.password.encode(), ADMIN_USER["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = jwt.encode({"sub": data.username}, JWT_SECRET, algorithm=JWT_ALGO)
-
-    return {"token": token}
+    return {"token": create_token(data.username)}

@@ -8,3 +8,5 @@ requests
 python-binance
 python-jose
 passlib[bcrypt]
+bcrypt
+PyJWT

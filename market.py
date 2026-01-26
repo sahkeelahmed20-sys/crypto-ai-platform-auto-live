@@ -3,8 +3,31 @@ from fastapi import APIRouter, Query
 
 router = APIRouter(prefix="/market", tags=["Market"])
 
-BINANCE = "https://api.binance.com"
+BINANCE_URL = "https://api.binance.com/api/v3/klines"
 
+@router.get("/candles")
+async def get_candles(symbol: str = "BTCUSDT", interval: str = "1h"):
+    params = {
+        "symbol": symbol,
+        "interval": interval,
+        "limit": 100
+    }
+
+    async with httpx.AsyncClient() as client:
+        r = await client.get(BINANCE_URL, params=params)
+        data = r.json()
+
+    return [
+        {
+            "time": c[0],
+            "open": float(c[1]),
+            "high": float(c[2]),
+            "low": float(c[3]),
+            "close": float(c[4]),
+            "volume": float(c[5])
+        }
+        for c in data
+        
 def ema(values, period):
     k = 2 / (period + 1)
     ema_vals = []

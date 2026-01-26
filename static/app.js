@@ -17,6 +17,27 @@ const candleSeries = chart.addCandlestickSeries({
   wickDownColor: '#ef4444'
 });
 
+const chart = LightweightCharts.createChart(
+  document.getElementById('chart'),
+  { width: window.innerWidth - 40, height: 400 }
+);
+
+const candleSeries = chart.addCandlestickSeries();
+
+fetch("/market/candles?symbol=BTCUSDT&interval=1h")
+  .then(res => res.json())
+  .then(data => {
+    candleSeries.setData(
+      data.map(c => ({
+        time: c.time / 1000,
+        open: c.open,
+        high: c.high,
+        low: c.low,
+        close: c.close
+      }))
+    );
+  });
+
 const ema20 = chart.addLineSeries({ color:'#60a5fa', lineWidth:2 });
 
 const rsiChart = LightweightCharts.createChart(document.getElementById('rsi'), {

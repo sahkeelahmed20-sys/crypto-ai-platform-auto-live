@@ -8,6 +8,7 @@ from jose import jwt
 from database import SessionLocal
 from models import User
 from pydantic import BaseModel
+from fastapi.security import OAuth2PasswordBearer
 
 security = HTTPBearer()
 
@@ -17,6 +18,23 @@ ALGORITHM = "HS256"
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    # TEMP example logic – replace with real JWT decode
+    if token != "TEST_TOKEN_CHANGE_LATER":
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return {
+        "username": "admin",
+        "role": "admin"
+    }
+
+def admin_only(user=Depends(get_current_user)):
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+
+    return user
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)

@@ -17,7 +17,7 @@ ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-router = APIRouter()
+router = APIRouter(prefix="", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -121,11 +121,28 @@ class LoginRequest(BaseModel):
     password: str
 
 @router.post("/login")
-def login(data: LoginRequest):
-    if data.username != "admin" or data.password != "admin123":
+def login(data: dict):
+    username = data.get("username")
+    password = data.get("password")
+
+    if username != "admin" or password != "admin123":
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     return {
         "token": "TEST_TOKEN_CHANGE_LATER"
     }
 
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    if token != "TEST_TOKEN_CHANGE_LATER":
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return {
+        "username": "admin",
+        "role": "admin"
+    }
+
+def admin_only(user=Depends(get_current_user)):
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+        
+    return user

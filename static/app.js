@@ -174,21 +174,40 @@ if (user.role === "admin") {
 const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
 async function login() {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  const status = document.getElementById("loginStatus");
 
-  const res = await fetch(`${API}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
-    "username": "admin",
-    "role": "admin"
-}
-  });
+  status.innerText = "Logging in...";
 
-  if (!res.ok) {
-    document.getElementById("loginStatus").innerText = "Login failed";
-    return;
+  try {
+    const r = await fetch(API + "/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: user,
+        password: pass
+      })
+    });
+
+    if (!r.ok) {
+      status.innerText = "Login failed";
+      return;
+    }
+
+    const d = await r.json();
+
+    // ✅ SAVE TOKEN
+    localStorage.setItem("token", d.token);
+
+    // ✅ SWITCH UI
+    document.getElementById("dashboard").style.display = "block";
+    status.innerText = "Logged in";
+
+    loadChart(); // load chart AFTER login
+
+  } catch (e) {
+    status.innerText = "Network error";
   }
   
 if user["role"] != "admin":

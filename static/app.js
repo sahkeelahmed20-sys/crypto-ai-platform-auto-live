@@ -157,6 +157,9 @@ async function login() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
+    "username": "admin",
+    "role": "admin"
+}
   });
 
   if (!res.ok) {

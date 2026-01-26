@@ -105,13 +105,18 @@ loadTrades();
 setInterval(loadCandles, 5000);
 
 async function loadStats() {
-  const r = await fetch(API + "/stats/summary");
-  const d = await r.json();
+  const token = localStorage.getItem("token");
 
-  document.getElementById("totalTrades").innerText = d.total_trades;
-  document.getElementById("winRate").innerText = d.win_rate;
-  document.getElementById("profit").innerText = d.profit;
+  const res = await fetch(`${API}/stats/summary`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const d = await res.json();
+  document.getElementById("stats").innerText =
+    `Balance: $${d.balance} | Profit: ${d.profit}% | Trades: ${d.trades}`;
 }
+
+loadStats();
 
 async function loadChart() {
   const r = await fetch(API + "/stats/chart");

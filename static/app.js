@@ -139,10 +139,15 @@ async function loadStats() {
 loadStats();
 
 async function loadChart() {
-  const r = await fetch(API + "/stats/chart");
-  const d = await r.json();
+  const r = await fetch("/market/candles");
+  const data = await r.json();
 
-  const ctx = document.getElementById("tradeChart");
+  console.log("Candle data:", data);
+
+  // Chart rendering placeholder (we'll improve later)
+}
+
+loadChart();
 
   if (chart) chart.destroy();
 

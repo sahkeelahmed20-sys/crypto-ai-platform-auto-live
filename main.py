@@ -11,4 +11,4 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def root():
-    return {"status": "ok"}
+    return {"static/index.html"}

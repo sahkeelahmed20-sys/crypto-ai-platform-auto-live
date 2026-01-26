@@ -147,6 +147,10 @@ setInterval(() => {
   loadChart();
 }, 5000);
 
+if (user.role === "admin") {
+  document.getElementById("adminPanel").style.display = "block";
+}
+
 const API = "https://crypto-ai-platform-auto-live.onrender.com";
 
 async function login() {

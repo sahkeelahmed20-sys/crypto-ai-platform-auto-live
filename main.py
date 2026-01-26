@@ -26,8 +26,7 @@ app.include_router(stats_router)
 
 app.include_router(auth_router)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 @app.get("/market/candles")
 def get_candles(symbol: str):
     # TEMP: mock candles (we replace with real exchange next)

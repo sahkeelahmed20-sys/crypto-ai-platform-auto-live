@@ -17,7 +17,7 @@ async def get_candles(symbol: str = "BTCUSDT", interval: str = "1h"):
         r = await client.get(BINANCE_URL, params=params)
         data = r.json()
 
-    return [
+    return 
         {
             "time": c[0],
             "open": float(c[1]),

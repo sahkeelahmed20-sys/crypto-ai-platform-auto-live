@@ -59,9 +59,18 @@ async function loadCandles() {
   1m`);
   const data = await res.json();
 
-  candle.setData(d.map(x => ({
-    time: x.time, open: x.open, high: x.high, low: x.low, close: x.close
-  })));
+  candleSeries.setData(
+    data.map(c => ({
+      time: c.time,
+      open: c.open,
+      high: c.high,
+      low: c.low,
+      close: c.close
+    }))
+  );
+}
+
+loadCandles();
 
   ema20.setData(d.map(x => ({ time: x.time, value: x.ema20 })));
   vwapLine.setData(d.map(x => ({ time: x.time, value: x.vwap })));

@@ -163,6 +163,9 @@ async function login() {
     document.getElementById("loginStatus").innerText = "Login failed";
     return;
   }
+  
+if user["role"] != "admin":
+    raise HTTPException(status_code=403)
 
   const data = await res.json();
   localStorage.setItem("token", data.token);

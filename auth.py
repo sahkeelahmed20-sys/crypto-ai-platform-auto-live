@@ -63,9 +63,10 @@ def create_token(user: User):
     
 @router.get("/admin/only")
 def admin_only(user=Depends(require_role("admin"))):
+    if user["role"] != "admin":
+    raise HTTPException(status_code=403)
     return {
         "message": "Welcome Admin",
-        "user": user["sub"]
     }
     
 @router.get("/trade/control")

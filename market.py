@@ -5,28 +5,26 @@ router = APIRouter(prefix="/market", tags=["Market"])
 
 BINANCE_URL = "https://api.binance.com/api/v3/klines"
 
-@router.get("/candles")
-async def get_candles(symbol: str = "BTCUSDT", interval: str = "1h"):
+@router.get("/candle")
+async def get_latest_candle():
     params = {
-        "symbol": symbol,
-        "interval": interval,
-        "limit": 100
+        "symbol": "BTCUSDT",
+        "interval": "1m",
+        "limit": 1
     }
 
     async with httpx.AsyncClient() as client:
         r = await client.get(BINANCE_URL, params=params)
-        data = r.json()
+        c = r.json()[0]
 
-    return 
-        {
-            "time": c[0],
-            "open": float(c[1]),
-            "high": float(c[2]),
-            "low": float(c[3]),
-            "close": float(c[4]),
-            "volume": float(c[5])
-        }
-        for c in data
+    return {
+        "time": c[0] // 1000,
+        "open": float(c[1]),
+        "high": float(c[2]),
+        "low": float(c[3]),
+        "close": float(c[4])
+    
+         }
         
 def ema(values, period):
     k = 2 / (period + 1)

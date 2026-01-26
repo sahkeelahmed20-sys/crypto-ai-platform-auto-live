@@ -6,6 +6,9 @@ from stats import router as stats_router
 import time
 from market import router as market_router
 from trades import router as trades_router
+from market_ws import router as ws_router
+
+
 
 
 
@@ -16,6 +19,8 @@ Base.metadata.create_all(bind=engine)
 app.include_router(trades_router)
 
 app.include_router(market_router)
+
+app.include_router(ws_router)
 
 app.include_router(stats_router)
 

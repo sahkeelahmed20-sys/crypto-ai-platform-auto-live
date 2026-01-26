@@ -47,13 +47,12 @@ def get_candles(symbol: str):
 
     return candles
     
-@router.get("/stats/summary")
-def stats():
+@app.get("/stats/summary")
+def stats_summary():
     return {
-        "balance": 10432.50,
-        "profit": 12.4,
-        "trades": 128,
-        "winrate": 63
+        "total_trades": 0,
+        "win_rate": 0,
+        "pnl": 0
     }
 
 @app.get("/")

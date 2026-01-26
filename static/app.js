@@ -56,7 +56,8 @@ let chart;
 
 async function loadCandles() {
   const r = await fetch(`${API}/market/candles?symbol=BTCUSDT&interval=1m&limit=200`);
-  const d = await r.json();
+  1m`);
+  const data = await res.json();
 
   candle.setData(d.map(x => ({
     time: x.time, open: x.open, high: x.high, low: x.low, close: x.close

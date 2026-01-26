@@ -46,6 +46,15 @@ def get_candles(symbol: str):
         price = close
 
     return candles
+    
+@router.get("/stats/summary")
+def stats():
+    return {
+        "balance": 10432.50,
+        "profit": 12.4,
+        "trades": 128,
+        "winrate": 63
+    }
 
 @app.get("/")
 def root():

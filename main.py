@@ -10,5 +10,5 @@ app.include_router(market_router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
-def root():
-    return {"static/index.html"}
+def home():
+    return FileResponse("static/index.html")

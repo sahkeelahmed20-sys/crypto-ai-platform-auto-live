@@ -22,20 +22,19 @@ const chart = LightweightCharts.createChart(
   { width: window.innerWidth - 40, height: 400 }
 );
 
-const candleSeries = chart.addCandlestickSeries();
+const series = chart.addCandlestickSeries();
 
-fetch("/market/candles?symbol=BTCUSDT&interval=1h")
-  .then(res => res.json())
-  .then(data => {
-    candleSeries.setData(
-      data.map(c => ({
-        time: c.time / 1000,
-        open: c.open,
-        high: c.high,
-        low: c.low,
-        close: c.close
-      }))
-    );
+let lastTime = 0;
+
+const socket = new WebSocket(`wss://${location.host}/ws/market`);
+
+socket.onmessage = (event) => {
+  const c = JSON.parse(event.data);
+
+  if (c.time !== lastTime) {
+    series.update(c);
+    lastTime = c.time;
+  }
   });
 
 const ema20 = chart.addLineSeries({ color:'#60a5fa', lineWidth:2 });
